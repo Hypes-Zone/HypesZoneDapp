@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 'use client'
 
-import { getHypeszonedappProgram, getHypeszonedappProgramId } from '@project/anchor'
+import { getHypeszonefeProgram, getHypeszonefeProgramId } from '@project/anchor'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -12,17 +10,17 @@ import { useCluster } from '../cluster/cluster-data-access'
 import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 
-export function useHypeszonedappProgram() {
+export function useHypeszonefeProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
   const provider = useAnchorProvider()
-  const programId = useMemo(() => getHypeszonedappProgramId(cluster.network as Cluster), [cluster])
-  const program = useMemo(() => getHypeszonedappProgram(provider, programId), [provider, programId])
+  const programId = useMemo(() => getHypeszonefeProgramId(cluster.network as Cluster), [cluster])
+  const program = useMemo(() => getHypeszonefeProgram(provider, programId), [provider, programId])
 
   const accounts = useQuery({
-    queryKey: ['hypeszonedapp', 'all', { cluster }],
-    queryFn: () => program.account.hypeszonedapp.all(),
+    queryKey: ['Hypeszonefe', 'all', { cluster }],
+    queryFn: () => program.account.Hypeszonefe.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -31,9 +29,9 @@ export function useHypeszonedappProgram() {
   })
 
   const initialize = useMutation({
-    mutationKey: ['hypeszonedapp', 'initialize', { cluster }],
+    mutationKey: ['Hypeszonefe', 'initialize', { cluster }],
     mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ hypeszonedapp: keypair.publicKey }).signers([keypair]).rpc(),
+      program.methods.initialize().accounts({ Hypeszonefe: keypair.publicKey }).signers([keypair]).rpc(),
     onSuccess: (signature) => {
       transactionToast(signature)
       return accounts.refetch()
@@ -50,19 +48,19 @@ export function useHypeszonedappProgram() {
   }
 }
 
-export function useHypeszonedappProgramAccount({ account }: { account: PublicKey }) {
+export function useHypeszonefeProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
-  const { program, accounts } = useHypeszonedappProgram()
+  const { program, accounts } = useHypeszonefeProgram()
 
   const accountQuery = useQuery({
-    queryKey: ['hypeszonedapp', 'fetch', { cluster, account }],
-    queryFn: () => program.account.hypeszonedapp.fetch(account),
+    queryKey: ['Hypeszonefe', 'fetch', { cluster, account }],
+    queryFn: () => program.account.Hypeszonefe.fetch(account),
   })
 
   const closeMutation = useMutation({
-    mutationKey: ['hypeszonedapp', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ hypeszonedapp: account }).rpc(),
+    mutationKey: ['Hypeszonefe', 'close', { cluster, account }],
+    mutationFn: () => program.methods.close().accounts({ Hypeszonefe: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accounts.refetch()
@@ -70,8 +68,8 @@ export function useHypeszonedappProgramAccount({ account }: { account: PublicKey
   })
 
   const decrementMutation = useMutation({
-    mutationKey: ['hypeszonedapp', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ hypeszonedapp: account }).rpc(),
+    mutationKey: ['Hypeszonefe', 'decrement', { cluster, account }],
+    mutationFn: () => program.methods.decrement().accounts({ Hypeszonefe: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -79,8 +77,8 @@ export function useHypeszonedappProgramAccount({ account }: { account: PublicKey
   })
 
   const incrementMutation = useMutation({
-    mutationKey: ['hypeszonedapp', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.increment().accounts({ hypeszonedapp: account }).rpc(),
+    mutationKey: ['Hypeszonefe', 'increment', { cluster, account }],
+    mutationFn: () => program.methods.increment().accounts({ Hypeszonefe: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()
@@ -88,8 +86,8 @@ export function useHypeszonedappProgramAccount({ account }: { account: PublicKey
   })
 
   const setMutation = useMutation({
-    mutationKey: ['hypeszonedapp', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ hypeszonedapp: account }).rpc(),
+    mutationKey: ['Hypeszonefe', 'set', { cluster, account }],
+    mutationFn: (value: number) => program.methods.set(value).accounts({ Hypeszonefe: account }).rpc(),
     onSuccess: (tx) => {
       transactionToast(tx)
       return accountQuery.refetch()

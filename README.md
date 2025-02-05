@@ -1,4 +1,4 @@
-# HypesZone Dapp
+# Hypes-zone-fe
 
 ## Getting Started
 

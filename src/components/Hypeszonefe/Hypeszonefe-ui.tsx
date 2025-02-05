@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 'use client'
 
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/cluster-ui'
-import { useHypeszonedappProgram, useHypeszonedappProgramAccount } from './hypeszonedapp-data-access'
+import { useHypeszonefeProgram, useHypeszonefeProgramAccount } from './Hypeszonefe-data-access'
 
-export function HypeszonedappCreate() {
-  const { initialize } = useHypeszonedappProgram()
+export function HypeszonefeCreate() {
+  const { initialize } = useHypeszonefeProgram()
 
   return (
     <button
@@ -22,8 +20,8 @@ export function HypeszonedappCreate() {
   )
 }
 
-export function HypeszonedappList() {
-  const { accounts, getProgramAccount } = useHypeszonedappProgram()
+export function HypeszonefeList() {
+  const { accounts, getProgramAccount } = useHypeszonefeProgram()
 
   if (getProgramAccount.isLoading) {
     return <span className="loading loading-spinner loading-lg"></span>
@@ -42,7 +40,7 @@ export function HypeszonedappList() {
       ) : accounts.data?.length ? (
         <div className="grid md:grid-cols-2 gap-4">
           {accounts.data?.map((account) => (
-            <HypeszonedappCard key={account.publicKey.toString()} account={account.publicKey} />
+            <HypeszonefeCard key={account.publicKey.toString()} account={account.publicKey} />
           ))}
         </div>
       ) : (
@@ -55,8 +53,8 @@ export function HypeszonedappList() {
   )
 }
 
-function HypeszonedappCard({ account }: { account: PublicKey }) {
-  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useHypeszonedappProgramAccount({
+function HypeszonefeCard({ account }: { account: PublicKey }) {
+  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useHypeszonefeProgramAccount({
     account,
   })
 

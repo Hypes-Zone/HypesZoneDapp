@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 'use client'
 
 import { clusterApiUrl, Connection } from '@solana/web3.js'

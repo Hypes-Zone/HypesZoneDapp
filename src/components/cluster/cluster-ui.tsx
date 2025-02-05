@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 'use client'
 
 import { useConnection } from '@solana/wallet-adapter-react'
@@ -102,12 +100,14 @@ export function ClusterUiModal({ hideModal, show }: { hideModal: () => void; sho
     >
       <input
         type="text"
+        placeholder="Name"
         className="input input-bordered w-full"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
       <input
         type="text"
+        placeholder="Endpoint"
         className="input input-bordered w-full"
         value={endpoint}
         onChange={(e) => setEndpoint(e.target.value)}

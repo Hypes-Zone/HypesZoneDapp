@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 'use client'
 
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -296,6 +294,7 @@ function ModalAirdrop({ hide, show, address }: { hide: () => void; show: boolean
         type="number"
         step="any"
         min="1"
+        placeholder="Amount"
         className="input input-bordered w-full"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
@@ -333,6 +332,7 @@ function ModalSend({ hide, show, address }: { hide: () => void; show: boolean; a
       <input
         disabled={mutation.isPending}
         type="text"
+        placeholder="Destination"
         className="input input-bordered w-full"
         value={destination}
         onChange={(e) => setDestination(e.target.value)}
@@ -342,6 +342,7 @@ function ModalSend({ hide, show, address }: { hide: () => void; show: boolean; a
         type="number"
         step="any"
         min="1"
+        placeholder="Amount"
         className="input input-bordered w-full"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
