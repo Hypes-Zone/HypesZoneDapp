@@ -22,6 +22,7 @@
     "@tabler/icons-react": "^3.11.0",
     "@tanstack/react-query": "^5.51.11",
     "@tanstack/react-query-next-experimental": "^5.51.11",
+    "bs58": "^6.0.0",
     "daisyui": "^4.12.10",
     "jotai": "^2.9.1",
     "next": "^14.2.23",
@@ -29,6 +30,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
+    "tweetnacl": "^1.0.3",
     "upgrade": "^1.1.0"
   },
   "devDependencies": {

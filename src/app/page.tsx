@@ -1,5 +1,5 @@
-import DashboardFeature from '@/components/dashboard/dashboard-feature'
+import LoginUi from "@/components/authentications/login-ui";
 
 export default function Page() {
-  return <DashboardFeature />
+  return <LoginUi />
 }
