@@ -1,43 +1,45 @@
 'use client'
 
-import Link from 'next/link'
-import {usePathname} from 'next/navigation'
 import * as React from 'react'
 import {ReactNode, Suspense, useEffect, useRef} from 'react'
 import toast, {Toaster} from 'react-hot-toast'
 
-import {AccountChecker} from '../account/account-ui'
-import {ClusterChecker, ClusterUiSelect, ExplorerLink} from '../cluster/cluster-ui'
+import {ExplorerLink} from '../cluster/cluster-ui'
 import {WalletButton} from '../solana/solana-provider'
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
-  const pathname = usePathname()
-
   return (
     <div className="h-full flex flex-col">
       <div className="navbar bg-base-300 dark:text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0">
+
 
         <div className="flex-1">
             <div className="flex w-full items-center justify-center">
               <span
                 className="absolute mx-auto flex border w-fit bg-gradient-to-r blur-xl from-pink-500 via-indigo-500 to-green-500 bg-clip-text text-3xl box-content font-extrabold text-transparent text-center select-none">
-                <p>Hypes.zone</p>
+                <p><a href={'/'}>Hypes.zone</a></p>
               </span>
             <h1
               className="relative top-0 w-fit h-auto justify-center flex bg-gradient-to-r items-center from-pink-500 via-indigo-500 to-green-500 bg-clip-text text-3xl font-extrabold text-transparent text-center select-auto">
-              <p>Hypes.zone</p>
+              <p>
+                <a href={'/'}>Hypes.zone</a>
+              </p>
             </h1>
           </div>
+        </div>
+
+        <div className="flex-1">
+          <a href={"https://hypes.zone"} target={"_blank"} rel={"noopener noreferrer nofollow"} className="btn btn-ghost btn-sm">
+              <p>
+                Back to Hypes.zone
+              </p>
+          </a>
         </div>
 
         <div className="flex-none space-x-2">
           <WalletButton/>
         </div>
       </div>
-
-      <ClusterChecker>
-        <AccountChecker/>
-      </ClusterChecker>
 
       <div className="flex-grow mx-4 lg:mx-auto">
         <Suspense
@@ -144,20 +146,3 @@ export function AppHero({
   )
 }
 
-export function ellipsify(str = '', len = 4) {
-  if (str.length > 30) {
-    return str.substring(0, len) + '..' + str.substring(str.length - len, str.length)
-  }
-  return str
-}
-
-export function useTransactionToast() {
-  return (signature: string) => {
-    toast.success(
-      <div className={'text-center'}>
-        <div className="text-lg">Transaction sent</div>
-        <ExplorerLink path={`tx/${signature}`} label={'View Transaction'} className="btn btn-xs btn-primary" />
-      </div>,
-    )
-  }
-}

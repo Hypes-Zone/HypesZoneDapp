@@ -22,56 +22,6 @@ export function ExplorerLink({ path, label, className }: { path: string; label: 
   )
 }
 
-export function ClusterChecker({ children }: { children: ReactNode }) {
-  const { cluster } = useCluster()
-  const { connection } = useConnection()
-
-  const query = useQuery({
-    queryKey: ['version', { cluster, endpoint: connection.rpcEndpoint }],
-    queryFn: () => connection.getVersion(),
-    retry: 1,
-  })
-  if (query.isLoading) {
-    return null
-  }
-  if (query.isError || !query.data) {
-    return (
-      <div className="alert alert-warning text-warning-content/80 rounded-none flex justify-center">
-        <span>
-          Error connecting to cluster <strong>{cluster.name}</strong>
-        </span>
-        <button className="btn btn-xs btn-neutral" onClick={() => query.refetch()}>
-          Refresh
-        </button>
-      </div>
-    )
-  }
-  return children
-}
-
-export function ClusterUiSelect() {
-  const { clusters, setCluster, cluster } = useCluster()
-  return (
-    <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-primary rounded-btn">
-        {cluster.name}
-      </label>
-      <ul tabIndex={0} className="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-        {clusters.map((item) => (
-          <li key={item.name}>
-            <button
-              className={`btn btn-sm ${item.active ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setCluster(item)}
-            >
-              {item.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
 export function ClusterUiModal({ hideModal, show }: { hideModal: () => void; show: boolean }) {
   const { addCluster } = useCluster()
   const [name, setName] = useState('')
