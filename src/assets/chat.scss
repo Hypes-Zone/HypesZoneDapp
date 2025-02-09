@@ -1,0 +1,18 @@
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+// Mixin to generate fade-in classes with dynamic delay
+@mixin fade-in($duration, $delay) {
+  animation: fadeIn #{$duration}s ease-in-out #{$delay}s forwards;
+  opacity: 0; // Ensure it starts hidden
+}
+
+// Generate specific fade-in classes
+// Generate fade-in classes from 2 to 16
+@for $i from 2 through 16 {
+  .fade-in-txt-#{$i} {
+    @include fade-in(2, $i);
+  }
+}

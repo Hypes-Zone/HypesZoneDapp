@@ -10,7 +10,7 @@ import {WalletButton} from '../solana/solana-provider'
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
   return (
     <div className="h-full flex flex-col">
-      <div className="navbar bg-base-300 dark:text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0">
+      <div className="navbar bg-base-300 dark:text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0" style={{minHeight: 'auto', paddingBottom: '10px'}}>
 
 
         <div className="flex-1">
@@ -41,7 +41,7 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
         </div>
       </div>
 
-      <div className="flex-grow mx-4 lg:mx-auto">
+      <div className="flex-grow">
         <Suspense
           fallback={
             <div className="text-center my-32">

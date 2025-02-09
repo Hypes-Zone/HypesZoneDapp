@@ -30,6 +30,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
+    "sass": "^1.84.0",
     "tweetnacl": "^1.0.3",
     "upgrade": "^1.1.0"
   },
