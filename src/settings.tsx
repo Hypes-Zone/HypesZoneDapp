@@ -1,0 +1,2 @@
+
+export const API_URL = "https://backend-dapp.hypes.zone/api";

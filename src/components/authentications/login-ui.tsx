@@ -9,6 +9,7 @@ import { getBase58Decoder, getBase64Decoder, getUtf8Encoder } from "@solana/code
 import bs58 from "bs58";
 import nacl from 'tweetnacl'
 import { ChatUiApp } from "@/components/chatdapp/chat-ui";
+import { getCSRFMessage, signIn } from "@/components/authentications/services/authServices";
 
 const links: { label: string; href: string }[] = [
   {label: 'Solana Docs', href: 'https://docs.solana.com/'},
@@ -38,42 +39,21 @@ export default function LoginUi() {
   }
 
   const onSignMessage = async () => {
-    const mm = "Hello, World!";
+    const message = await getCSRFMessage(publicKey);
+    const encodedMessage = new TextEncoder().encode(message);
 
-    const encodedMessage = new TextEncoder().encode(mm);
-
-    signMessage?.(encodedMessage).then((signedMessage) => {
+    signMessage?.(encodedMessage).then(async (signedMessage) => {
 
       const signature = bs58.encode(signedMessage as Uint8Array);
-      console.log("Signature:", signature);
 
-      let pkey = new PublicKey(publicKey);
-      const verifySignature = (signature: any, publicKey: any) => {
-        try {
-          // Convert inputs to correct format
-
-          const verified = nacl
-            .sign
-            .detached
-            .verify( new TextEncoder().encode(mm), bs58.decode(signature), bs58.decode(pkey.toBase58())
-            )
-
-          // Verify signature
-
-          console.log("Signature valid:", verified);
-          setWalletSignedIn(verified);
-          return verified;
-        } catch (error) {
-          console.error("Error verifying signature:", error);
-          return false;
-        }
-      };
-
-      console.log("verifySignature(signature, publicKey));:", verifySignature(signature, publicKey));
+      const jwt = await signIn(publicKey, signature);
+      if (jwt) {
+        setWalletSignedIn(true);
+      } else {
+        setWalletSignedIn(false);
+      }
     });
-
   }
-
 
   if (!walletSignedIn) {
     return (
