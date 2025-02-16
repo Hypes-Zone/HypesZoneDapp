@@ -1,13 +1,9 @@
 'use client'
 
-import { useMemo, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
-import { useParams } from "next/navigation";
+import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { getBase58Decoder, getBase64Decoder, getUtf8Encoder } from "@solana/codecs-strings";
 
 import bs58 from "bs58";
-import nacl from 'tweetnacl'
 import { ChatUiApp } from "@/components/chatdapp/chat-ui";
 import { getCSRFMessage, signIn } from "@/components/authentications/services/authServices";
 

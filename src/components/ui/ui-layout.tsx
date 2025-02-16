@@ -2,19 +2,22 @@
 
 import * as React from 'react'
 import {ReactNode, Suspense, useEffect, useRef} from 'react'
-import toast, {Toaster} from 'react-hot-toast'
+import {Toaster} from 'react-hot-toast'
 
-import {ExplorerLink} from '../cluster/cluster-ui'
 import {WalletButton} from '../solana/solana-provider'
+
+import {WalletBalance} from '../wallet/balance';
+
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
   return (
     <div className="h-full flex flex-col">
-      <div className="navbar bg-base-300 dark:text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0" style={{minHeight: 'auto', paddingBottom: '10px'}}>
+      <div className="navbar bg-base-300 dark:text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0"
+           style={{minHeight: 'auto', paddingBottom: '10px'}}>
 
 
         <div className="flex-1">
-            <div className="flex w-full items-center justify-center">
+          <div className="flex w-full items-center justify-center">
               <span
                 className="absolute mx-auto flex border w-fit bg-gradient-to-r blur-xl from-pink-500 via-indigo-500 to-green-500 bg-clip-text text-3xl box-content font-extrabold text-transparent text-center select-none">
                 <p><a href={'/'}>Hypes.zone</a></p>
@@ -29,10 +32,15 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
         </div>
 
         <div className="flex-1">
-          <a href={"https://hypes.zone"} target={"_blank"} rel={"noopener noreferrer nofollow"} className="btn btn-ghost btn-sm">
-              <p>
-                Back to Hypes.zone
-              </p>
+            <WalletBalance/>
+        </div>
+
+        <div className="flex-1">
+          <a href={"https://hypes.zone"} target={"_blank"} rel={"noopener noreferrer nofollow"}
+             className="btn btn-ghost btn-sm">
+            <p>
+              Back to Hypes.zone
+            </p>
           </a>
         </div>
 
