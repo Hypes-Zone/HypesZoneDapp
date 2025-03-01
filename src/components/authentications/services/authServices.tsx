@@ -1,6 +1,6 @@
 import { API_URL } from "@/settings";
 import { PublicKey } from "@solana/web3.js";
-
+import {jwtDecode} from "jwt-decode";
 
 export const getCSRFMessage = async (public_key: PublicKey) => {
 
@@ -46,4 +46,37 @@ export const signIn = async (public_key: PublicKey, signature: string) => {
 
   const data = await response.json();
   return data.jwt
+}
+
+export const setJWT = (jwt: string) => {
+  localStorage.setItem('jwt', jwt);
+}
+
+export const getJWT = () => {
+  return localStorage.getItem('jwt');
+}
+
+export const signOut = () => {
+  localStorage.removeItem('jwt');
+}
+
+export const isJWTValid = (jwt: string) => {
+  let decodedToken = jwtDecode(jwt);
+
+  if (!decodedToken || !decodedToken.exp) {
+    console.log("No token found.");
+    return false;
+  }
+
+  console.log("Decoded Token", decodedToken);
+  let currentDate = new Date();
+
+  // JWT exp is in seconds
+  if (decodedToken.exp * 1000 < currentDate.getTime()) {
+    console.log("Token expired.");
+    return false;
+  } else {
+    console.log("Valid token");
+    return true;
+  }
 }

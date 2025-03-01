@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import bs58 from "bs58";
 import { ChatUiApp } from "@/components/chatdapp/chat-ui";
-import { getCSRFMessage, signIn } from "@/components/authentications/services/authServices";
+import { getCSRFMessage, getJWT, isJWTValid, setJWT, signIn } from "@/components/authentications/services/authServices";
 
 const links: { label: string; href: string }[] = [
   {label: 'Solana Docs', href: 'https://docs.solana.com/'},
@@ -19,6 +19,16 @@ export default function LoginUi() {
   const {publicKey, signMessage, disconnect, connected} = useWallet();
 
   const [walletSignedIn, setWalletSignedIn] = useState(false);
+
+  useEffect(() => {
+    const isSignedIn = () => {
+      const jwt = getJWT();
+      let result = !!(jwt && isJWTValid(jwt));
+      setWalletSignedIn(result);
+    }
+
+    isSignedIn();
+  }, []);
 
   if (!publicKey) {
     return (
@@ -44,6 +54,7 @@ export default function LoginUi() {
 
       const jwt = await signIn(publicKey, signature);
       if (jwt) {
+        setJWT(jwt);
         setWalletSignedIn(true);
       } else {
         setWalletSignedIn(false);
