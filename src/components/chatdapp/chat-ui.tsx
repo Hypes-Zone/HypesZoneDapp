@@ -103,7 +103,6 @@ export function ChatUiApp() {
       return;
     }
 
-
     // create chat bubble
     let chat = document.createElement("div");
     chat.classList.add("chat");
@@ -115,7 +114,6 @@ export function ChatUiApp() {
     chatBubble.classList.add("chat-bubble");
     chatBubble.classList.add("chat-bubble-accent");
     chatBubble.innerText = value;
-
 
     // append chat bubble to chat
     chat.appendChild(chatBubble);
