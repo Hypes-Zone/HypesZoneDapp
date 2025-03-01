@@ -16,3 +16,63 @@
     @include fade-in(2, $i);
   }
 }
+
+.chat-box {
+  min-height: 100%;
+  padding: 50px;
+  overflow: hidden;
+  max-height: 900px;
+
+}
+
+.chat-settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-center {
+  display: flex;
+  max-width: fit-content;
+  margin: 10px auto;
+}
+
+.chat-box-active {
+  background-color: var(--fallback-in,oklch(var(--in)/var(--tw-bg-opacity)));
+  color: black;
+  border-radius: 10px;
+}
+
+.chat-box-list {
+  overflow-y: scroll;
+}
+
+.chat-box-list-item {
+  word-break: break-all;
+  overflow-y: scroll;
+  a {
+    word-break: break-all;
+    font-size: 15px !important;
+  }
+}
+
+.start-new-chat-input {
+  margin: 10px;
+  min-width: 94%;
+}
+
+@media (min-width: 768px) {
+  .md\:chat-box {
+    display: block;
+    background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity, 1)));
+    border-radius: 1rem;
+    min-width: 235px;
+  }
+}
+
+@media (max-width: 767px) {
+    .md\:chat-box {
+        display: none;
+    }
+}
