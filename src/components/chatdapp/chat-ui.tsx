@@ -1,7 +1,8 @@
 import '../../assets/chat.scss'
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { createChatRoom, getChatRooms } from "@/components/chatdapp/services/chatServices";
 
 
 export function ChatUiApp() {
@@ -9,11 +10,40 @@ export function ChatUiApp() {
 
   const [text, setText] = useState('');
 
+  const [time, setTime] = useState(Date.now());
+
+  useEffect(() => {
+    EventListenerChatRoomsCreated();
+    // const interval = setInterval(() => {
+    //   setTime(Date.now())
+    //   EventListenerChatRoomsCreated();
+    // }, 2000);
+    // return () => {
+    //   clearInterval(interval);
+    // };
+  }, []);
+
   if (!publicKey) {
     return (
       <></>
     )
   }
+
+  const EventListenerChatRoomsCreated = () => {
+    getChatRooms(publicKey).then((result) => {
+      let chat_rooms = result.chat_rooms;
+
+      for (let i = 0; i < chat_rooms.length; i++) {
+        createNewChatRoom(chat_rooms[i].public_key_user_initiator);
+        createNewChatRoom(chat_rooms[i].public_key_user_receiver);
+      }
+
+    }).catch( (error) => {
+      console.log("error: " + error);
+      // alert("" + error + "");
+    });
+  }
+
 
   const setActive = (e: any) => {
     let current = document.getElementsByClassName("chat-box-active");
@@ -36,14 +66,15 @@ export function ChatUiApp() {
 
   }
 
-  const startNewChat = (e: any) => {
-    const {value} = document.querySelector(e.target.getAttribute("data-input"));
+  const createNewChatRoom = (publicKey: any) => {
+    let slugValue = publicKey.replace(/\s+/g, '-').toLowerCase();
+    let chatBoxID = "chat-" + slugValue;
 
-    if (!value) {
+    // Return if chat already exists
+    let chatBoxChatExists = document.getElementById(chatBoxID);
+    if (chatBoxChatExists) {
       return;
     }
-
-    document.querySelector(e.target.getAttribute("data-input")).value = '';
 
     // create li element
     let li = document.createElement("li");
@@ -51,37 +82,44 @@ export function ChatUiApp() {
 
     // create p element
     let p = document.createElement("p");
-    p.textContent = value;
+    p.textContent = publicKey;
     p.onclick = (e) => setActive(e);
 
     // append p to li
     li.appendChild(p);
 
     // append li to ul as first child in the list
-    document.querySelector(e.target.getAttribute("data-items")).prepend(li);
-    //
-    // let chat = ` <div className="md:col-span-2 md:chat-box md:chat-box-chat">
-    //
-    //   <div className="chat chat-start fade-in-txt-1">
-    //     <div className="chat-bubble chat-bubble-primary">Remote</div>
-    //   </div>
-    //
-    //   <div className="chat chat-end fade-in-txt-1">
-    //     <div className="chat-bubble chat-bubble-accent">
-    //       Local
-    //     </div>
-    //   </div>
-    //
-    // </div>`;
+    document.getElementById("chat-box-list-items")?.prepend(li);
 
     // Create the chat-box-chat
     let chatBoxChat = document.createElement("div");
     chatBoxChat.className = "md:col-span-2 md:chat-box md:chat-box-chat";
 
-    let slugValue = value.replace(/\s+/g, '-').toLowerCase();
-    chatBoxChat.id = "chat-" + slugValue;
+    chatBoxChat.id = chatBoxID;
 
     document.getElementById("chat-container")?.prepend(chatBoxChat);
+  }
+
+  const startNewChat = (e: any) => {
+    const {value} = document.querySelector(e.target.getAttribute("data-input"));
+
+    if (!value) {
+      return;
+    }
+
+    createChatRoom(publicKey, value).then((result) => {
+      document.querySelector(e.target.getAttribute("data-input")).value = '';
+
+      if (!result.new_chat)
+        return;
+
+      createNewChatRoom(value);
+
+    }).catch( (error) => {
+      console.log(error);
+      document.querySelector(e.target.getAttribute("data-input")).value = '';
+      alert("" + error + "");
+    });
   }
 
   const sendChatEnter = (e: any) => {

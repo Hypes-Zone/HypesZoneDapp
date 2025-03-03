@@ -3,32 +3,33 @@ import { API_URL } from "@/settings";
 import { getJWT } from "@/components/authentications/services/authServices";
 
 
-
 export const createChatRoom = async (public_key: PublicKey, to_public_key: string) => {
 
-  const response = await fetch(`${API_URL}/v1/chat-room/`, {
+  const response = await fetch(`${API_URL}/v1/create-new-singe-chat/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${getJWT()}`
-
     },
     body: JSON.stringify(
       {
-        public_key: public_key,
-        to_public_key: to_public_key
+        public_key_initiator: public_key,
+        public_key_receiver: to_public_key
       }
     ),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create chat room');
+    const data = await response.json();
+    throw new Error('Failed to create chat room, check public key: ' + data.detail);
   }
+
+  return await response.json();
 }
 
 export const getChatRooms = async (public_key: PublicKey) => {
 
-  const response = await fetch(`${API_URL}/v1/chat-room/?public_key=${public_key}`, {
+  const response = await fetch(`${API_URL}/v1/get-chat-rooms/?public_key=${public_key}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -37,11 +38,11 @@ export const getChatRooms = async (public_key: PublicKey) => {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to get chat rooms');
+    const data = await response.json();
+    throw new Error('Failed to get chat rooms: ' + data.detail);
   }
 
-  const data = await response.json();
-  return data.chat_rooms
+  return await response.json();
 }
 
 export const sendChatMessage = async (public_key: PublicKey, to_public_key: string, message: string) => {
