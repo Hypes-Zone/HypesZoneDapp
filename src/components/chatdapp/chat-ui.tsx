@@ -3,24 +3,26 @@ import '../../assets/chat.scss'
 import React, { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createChatRoom, getChatRooms } from "@/components/chatdapp/services/chatServices";
+import { getJWT } from "@/components/authentications/services/authServices";
 
 
 export function ChatUiApp() {
   const {publicKey} = useWallet();
 
   const [text, setText] = useState('');
-
   const [time, setTime] = useState(Date.now());
+  const [roomId, setRoomId] = useState('');
+
+  const [chatRooms, setChatRooms] = useState<{ [key: string]: any }>({});
 
   useEffect(() => {
     EventListenerChatRoomsCreated();
-    // const interval = setInterval(() => {
-    //   setTime(Date.now())
-    //   EventListenerChatRoomsCreated();
-    // }, 2000);
-    // return () => {
-    //   clearInterval(interval);
-    // };
+
+    return () => {
+      for (let key in chatRooms) {
+        chatRooms[key].close();
+      }
+    }
   }, []);
 
   if (!publicKey) {
@@ -29,16 +31,53 @@ export function ChatUiApp() {
     )
   }
 
+  const openChat = (roomId: any) => {
+    if (chatRooms[roomId]) {
+      return;
+    }
+
+    const ws = new WebSocket(`ws://localhost:8000/ws/${roomId}/${publicKey}/${getJWT()}`);
+    chatRooms[roomId] = ws;
+
+    console.log("chatRooms", chatRooms);
+    console.log("roomId", roomId);
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket');
+    };
+
+    ws.onmessage = (event) => {
+      console.log('Message received:', event.data);
+
+      // Get the room id from the event data
+      let data = JSON.parse(event.data);
+      let roomId = data.roomId;
+      let message = data.message;
+      let sender = data.sender;
+      receiveChat(message, roomId, sender);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    return () => {
+      ws.close();
+    };
+
+  }
+
   const EventListenerChatRoomsCreated = () => {
     getChatRooms(publicKey).then((result) => {
       let chat_rooms = result.chat_rooms;
 
       for (let i = 0; i < chat_rooms.length; i++) {
-        createNewChatRoom(chat_rooms[i].public_key_user_initiator);
-        createNewChatRoom(chat_rooms[i].public_key_user_receiver);
+        console.log(chat_rooms[i]);
+        let receiver = chat_rooms[i].public_key_user_receiver.toLowerCase() != publicKey.toString().toLowerCase() ? chat_rooms[i].public_key_user_receiver : chat_rooms[i].public_key_user_initiator;
+        createNewChatRoom(chat_rooms[i].room_id, receiver);
       }
 
-    }).catch( (error) => {
+    }).catch((error) => {
       console.log("error: " + error);
       // alert("" + error + "");
     });
@@ -51,24 +90,29 @@ export function ChatUiApp() {
       current[0].className = current[0].className.replace(" chat-box-active", "");
     }
 
-    let slugValue = e.currentTarget.textContent.replace(/\s+/g, '-').toLowerCase();
+    let roomId = e.currentTarget.getAttribute("data-room-id");
 
     let chatBoxChats = document.getElementsByClassName("md:chat-box-chat");
+    let chatBoxChatActiveIndex = 0;
     for (let i = 0; i < chatBoxChats.length; i++) {
-      if (chatBoxChats[i].id !== "chat-" + slugValue) {
-        chatBoxChats[i].className = chatBoxChats[i].className.replace(" md:chat-box-chat-active", "");
-      } else {
-        chatBoxChats[i].className += " md:chat-box-chat-active";
+
+      chatBoxChats[i].className = chatBoxChats[i].className.replace(" md:chat-box-chat-active", "");
+
+      if (chatBoxChats[i].id === "chat-" + roomId) {
+        chatBoxChatActiveIndex = i;
       }
     }
+
+    chatBoxChats[chatBoxChatActiveIndex].className += " md:chat-box-chat-active";
+    setRoomId(roomId);
+    openChat(roomId);
 
     e.currentTarget.className += " chat-box-active";
 
   }
 
-  const createNewChatRoom = (publicKey: any) => {
-    let slugValue = publicKey.replace(/\s+/g, '-').toLowerCase();
-    let chatBoxID = "chat-" + slugValue;
+  const createNewChatRoom = (roomId: string, publicKey: any) => {
+    let chatBoxID = "chat-" + roomId;
 
     // Return if chat already exists
     let chatBoxChatExists = document.getElementById(chatBoxID);
@@ -84,6 +128,7 @@ export function ChatUiApp() {
     let p = document.createElement("p");
     p.textContent = publicKey;
     p.onclick = (e) => setActive(e);
+    p.setAttribute("data-room-id", roomId);
 
     // append p to li
     li.appendChild(p);
@@ -113,9 +158,9 @@ export function ChatUiApp() {
       if (!result.new_chat)
         return;
 
-      createNewChatRoom(value);
+      createNewChatRoom(result.room_id, value);
 
-    }).catch( (error) => {
+    }).catch((error) => {
       console.log(error);
       document.querySelector(e.target.getAttribute("data-input")).value = '';
       alert("" + error + "");
@@ -136,33 +181,82 @@ export function ChatUiApp() {
       return;
     }
 
-    let chatBoxChatActive = document.getElementsByClassName("md:chat-box-chat-active");
-    if (chatBoxChatActive.length === 0 || chatBoxChatActive.length > 1) {
+    console.log(chatRooms)
+    let ws = chatRooms[roomId];
+    ws.send(value);
+    //
+    // let chatBoxChatActive = document.getElementsByClassName("md:chat-box-chat-active");
+    // if (chatBoxChatActive.length === 0 || chatBoxChatActive.length > 1) {
+    //   return;
+    // }
+    //
+    // // create chat bubble
+    // let chat = document.createElement("div");
+    // chat.classList.add("chat");
+    // chat.classList.add("chat-end");
+    // chat.classList.add("fade-in-txt-1");
+    //
+    // // create chat bubble
+    // let chatBubble = document.createElement("div");
+    // chatBubble.classList.add("chat-bubble");
+    // chatBubble.classList.add("chat-bubble-accent");
+    // chatBubble.innerText = value;
+    //
+    // // append chat bubble to chat
+    // chat.appendChild(chatBubble);
+    //
+    // // append chat to chat-box-chat
+    // chatBoxChatActive[0].appendChild(chat);
+    //
+    // // scroll to bottom
+    // chatBoxChatActive[0].scrollTop = chatBoxChatActive[0].scrollHeight;
+  }
+
+  const receiveChat = (value: any, roomId: any, sender: string) => {
+    if (!value || value === '' || value.length === 0 || value.trim() === '' || value.length > 1024) {
       return;
     }
 
+    let chatBoxRoomId = "chat-" + roomId;
+    console.log("chatBoxRoomId", chatBoxRoomId);
+
+    let chatBoxChat = document.getElementById(chatBoxRoomId);
+    if (!chatBoxChat) {
+      return;
+    }
+
+    console.log("1")
     // create chat bubble
     let chat = document.createElement("div");
     chat.classList.add("chat");
-    chat.classList.add("chat-end");
+    if (sender !== publicKey.toString()) {
+      chat.classList.add("chat-begin");
+    } else {
+      chat.classList.add("chat-end");
+    }
     chat.classList.add("fade-in-txt-1");
+
+    console.log("2")
 
     // create chat bubble
     let chatBubble = document.createElement("div");
     chatBubble.classList.add("chat-bubble");
-    chatBubble.classList.add("chat-bubble-accent");
+    if (sender !== publicKey.toString()) {
+      chatBubble.classList.add("chat-bubble-primary");
+    } else {
+      chatBubble.classList.add("chat-bubble-accent");
+    }
     chatBubble.innerText = value;
 
     // append chat bubble to chat
     chat.appendChild(chatBubble);
 
     // append chat to chat-box-chat
-    chatBoxChatActive[0].appendChild(chat);
+    chatBoxChat.appendChild(chat);
 
     // scroll to bottom
-    chatBoxChatActive[0].scrollTop = chatBoxChatActive[0].scrollHeight;
+    chatBoxChat.scrollTop = chatBoxChat.scrollHeight;
   }
-
   return (
 
     <div className="grid grid-flow-col grid-cols-3 md:grid-rows-1 gap-4 chat-box">
