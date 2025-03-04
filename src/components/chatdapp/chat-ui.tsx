@@ -36,7 +36,7 @@ export function ChatUiApp() {
       return;
     }
 
-    const ws = new WebSocket(`wss://app.hypes.zone/ws/${roomId}/${publicKey}/${getJWT()}`);
+    const ws = new WebSocket(`wss://backend-dapp.hypes.zone/ws/${roomId}/${publicKey}/${getJWT()}`);
     chatRooms[roomId] = ws;
 
     console.log("chatRooms", chatRooms);
