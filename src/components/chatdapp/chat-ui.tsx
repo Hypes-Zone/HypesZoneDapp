@@ -184,32 +184,6 @@ export function ChatUiApp() {
     console.log(chatRooms)
     let ws = chatRooms[roomId];
     ws.send(value);
-    //
-    // let chatBoxChatActive = document.getElementsByClassName("md:chat-box-chat-active");
-    // if (chatBoxChatActive.length === 0 || chatBoxChatActive.length > 1) {
-    //   return;
-    // }
-    //
-    // // create chat bubble
-    // let chat = document.createElement("div");
-    // chat.classList.add("chat");
-    // chat.classList.add("chat-end");
-    // chat.classList.add("fade-in-txt-1");
-    //
-    // // create chat bubble
-    // let chatBubble = document.createElement("div");
-    // chatBubble.classList.add("chat-bubble");
-    // chatBubble.classList.add("chat-bubble-accent");
-    // chatBubble.innerText = value;
-    //
-    // // append chat bubble to chat
-    // chat.appendChild(chatBubble);
-    //
-    // // append chat to chat-box-chat
-    // chatBoxChatActive[0].appendChild(chat);
-    //
-    // // scroll to bottom
-    // chatBoxChatActive[0].scrollTop = chatBoxChatActive[0].scrollHeight;
   }
 
   const receiveChat = (value: any, roomId: any, sender: string) => {
